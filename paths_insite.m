@@ -20,7 +20,7 @@ function [rx_matrix,path_int,path_info,path_des,path_int_position] = paths_insit
 % #			<cartesian locations of interactions> (including Tx and Rx)
 fileID = fopen(filename_paths);
 C = textscan(fileID,'%s');
-A=C{1,1}(108:length(C{1,1}),1);
+A=C{1,1}(109:length(C{1,1}),1);
 
 path_int_position(1:path_max_rx,:,1:rx)=0;
 path_int(1:path_max_rx,1:rx)=0;

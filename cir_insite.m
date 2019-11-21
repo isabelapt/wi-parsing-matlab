@@ -4,8 +4,8 @@ fileID = fopen(filename_cir);
 C = textscan(fileID,'%s');
 A=C{1,1}(44:length(C{1,1}),1);
 A=str2double(A);
-rx_paths(1)= A(2,1);
-end_v(1) =rx_paths(1)*4+2;
+rx_paths(1)= A(3,1); % Number of paths of the first receiver
+end_v(1) =rx_paths(1)*4+3; % Data from first receiver ends
 rx_matrix = zeros(end_v(1),rx);
 rx_matrix(:,1)= A(1:end_v(1),1);
 
