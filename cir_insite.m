@@ -1,5 +1,7 @@
 function [time_arrival,powerpaths_dbm,powerphase_deg,rx_paths,path_max_rx ] =cir_insite(rx,filename_cir)
 rx_paths=[];
+end_v =[];
+
 fileID = fopen(filename_cir);
 C = textscan(fileID,'%s');
 A=C{1,1}(44:length(C{1,1}),1);
