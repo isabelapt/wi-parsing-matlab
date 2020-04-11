@@ -1,4 +1,4 @@
-function [RPower_matrix] = RPowerInSite_f( Nreceivers,Nrx,Ntx)
+function [RPower_matrix] = RPowerInSite_f(Nreceivers,Nrx,Ntx,path)
 %% Conditioning the Received Power fom MIMO InSite
 format shortE
 format compact
@@ -10,7 +10,7 @@ k=0;
 for i=1:Ntx
     for j=1:Nrx
     k=k+1;
-    filename = ['power.txSet001.txPt001.rxSet002.txEl00' num2str(i) '.rxEl00' num2str(j) '.inst001.csv'];
+    filename = ['power.txSet031.txPt001.rxSet029.txEl00' num2str(i) '.rxEl00' num2str(j) '.inst001.csv'];
     RPower =  importdata(filename,',', 1);
     RPower_matrix(:,:,k) = RPower.data(:,:);
     end

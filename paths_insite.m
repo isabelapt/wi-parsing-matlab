@@ -62,4 +62,5 @@ for m=1:rx
         end_v(n) =end_v(n)+2;
     end
 end
+fclose('all');
 end

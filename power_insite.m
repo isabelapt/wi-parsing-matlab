@@ -22,5 +22,6 @@ phase =B(:,7);       % Phase (deg)
 
 power_phase= [power_dbm phase];
 rx_position =[x_pos y_pos z_pos];
+fclose('all');
 end
 

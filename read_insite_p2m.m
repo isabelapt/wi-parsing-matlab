@@ -15,7 +15,7 @@
 [pl_db] = pldb_insite(filename_pl);
 
 % Delay Spread (sec) % 
-[delayspread] = ds_insite(filename_spread);
+% [delayspread] = ds_insite(filename_spread);
 
 % -250 is the power threshold to eliminate the receiver 
 for i = 1:rx
@@ -30,10 +30,10 @@ end
 %% Results per path
 % Read the Complex Impulse Response
 if rx ~=0
-[time_arrival,powerpaths_dbm,powerphase_deg,rx_paths,path_max_rx] =cir_insite(rx,paths_max,filename_cir);
+[time_arrival,powerpaths_dbm,phasepaths_deg,rx_paths,path_max_rx] =cir_insite(rx,paths_max,filename_cir);
 else
     powerpaths_dbm=-Inf;
-    powerphase_deg=0;
+    phasepaths_deg=0;
     rx_paths=0;
     total_paths=0;
     paths_summary=0;
@@ -47,3 +47,10 @@ end
 
 % Read the Propagation Paths
 [rx_matrix,path_int,path_info,path_des,path_int_position] = paths_insite(rx,filename_paths,rx_paths,path_max_rx);
+
+% Read the Complex Eletric Fields 
+[e_phimag, e_phiphase,e_thetamag, e_thetaphase, ...
+     e_xmag,e_xphase,e_ymag,e_yphase,e_zmag,e_zphase,V_path,rx_paths,path_max_rx] =cef_insite(rx,filename_cef);
+ 
+phase = atan2(imag(V_path),real(V_path));
+V_total = sum(V_path);

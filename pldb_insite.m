@@ -15,5 +15,6 @@ for i=1:rx
 end
 B=B';
 pl_db_insite=B(:,6);
+fclose('all');
 end
 

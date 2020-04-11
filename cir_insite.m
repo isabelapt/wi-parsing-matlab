@@ -34,5 +34,6 @@ for i=1:rx
     end
 end
 path_max_rx = max(rx_paths);
+fclose('all');
 end
 
