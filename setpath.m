@@ -1,1 +1,1 @@
-addpath('../wi-parsing-matlab')
+addpath(genpath('../wi-parsing-matlab'))
