@@ -27,7 +27,7 @@ for i=1:rx
         powerpaths_dbm(j,i)=rx_matrix(a+2,i);  % Potencia em dBm
     end
     for j=rx_paths(i)+1:paths_max
-        a=d(j)+a;
+%         a=d(j)+a;
         powerphase_deg(j,i)=NaN;  % Fase em deg
         time_arrival(j,i)=NaN;    % Time arrival em segundos
         powerpaths_dbm(j,i)=NaN;  % Potencia em dBm

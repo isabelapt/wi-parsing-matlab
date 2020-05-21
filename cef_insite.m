@@ -1,5 +1,5 @@
 function [e_phimag, e_phiphase,e_thetamag, e_thetaphase, ...
-     e_xmag,e_xphase,e_ymag,e_yphase,e_zmag,e_zphase,V_path,rx_paths,path_max_rx] =cef_insite(rx,filename_cef)
+     e_xmag,e_xphase,e_ymag,e_yphase,e_zmag,e_zphase,rx_paths,path_max_rx] =cef_insite(rx,filename_cef)
 format long
 rx_paths=[];
 fileID = fopen(filename_cef);
@@ -35,10 +35,5 @@ for i=1:rx
     end
 end
 path_max_rx = max(rx_paths);
-
-[Xcart_phi,Ycart_phi] = pol2cart(deg2rad(e_phiphase),e_phimag);
-[Xcart_theta,Ycart_theta] = pol2cart(deg2rad(e_thetaphase),e_thetamag);
-
-V_path =  (Xcart_phi + Xcart_theta + 1j*(Ycart_phi+Ycart_theta));
 end
 

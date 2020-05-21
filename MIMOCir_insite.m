@@ -19,14 +19,15 @@ for i=1:Nreceivers
             end
             file = strcat(path,filename);
             CIR =  csvread(file,1);
-            if length(CIR) < 250
-                CIR_matrix(1:length(CIR),:) =CIR;
-                a=length(CIR)+1;
-                b=250-length(CIR);
-                r=k;
-                CIR_matrix(a:b,:) = NaN;
+            [r,c] = size(CIR);
+            if  r < 250
+                CIR_matrix(1:r,:,k) = CIR;
+%                 a=r+1;
+%                 b=250;
+% %                 r=k;
+%                 CIR_matrix(a:b,:) = NaN;
             else
-                CIR_matrix(:,:,k)=CIR;
+                CIR_matrix(:,:,k)= CIR;
             end
         end
     end

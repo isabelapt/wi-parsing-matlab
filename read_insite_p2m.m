@@ -45,12 +45,35 @@ else
    powerpaths_W = dbm2W(powerpaths_dbm,ls_db); 
 end
 
+time_arrival = time_arrival(~isnan(time_arrival));
+powerpaths_dbm = powerpaths_dbm(~isnan(powerpaths_dbm));
+phasepaths_deg = phasepaths_deg(~isnan(phasepaths_deg ));
+powerpaths_W = powerpaths_W(~isnan(powerpaths_W));
+
+
 % Read the Propagation Paths
 [rx_matrix,path_int,path_info,path_des,path_int_position] = paths_insite(rx,filename_paths,rx_paths,path_max_rx);
 
 % Read the Complex Eletric Fields 
 [e_phimag, e_phiphase,e_thetamag, e_thetaphase, ...
-     e_xmag,e_xphase,e_ymag,e_yphase,e_zmag,e_zphase,V_path,rx_paths,path_max_rx] =cef_insite(rx,filename_cef);
- 
-phase = atan2(imag(V_path),real(V_path));
-V_total = sum(V_path);
+     e_xmag,e_xphase,e_ymag,e_yphase,e_zmag,e_zphase,rx_paths,path_max_rx] =cef_insite(rx,filename_cef);
+
+% Calculate Complex Voltage 
+% gain_theta = 2*pi/(inputpower_W*impedance);
+% gain_phi = 2*pi/(inputpower_W*impedance);
+% 
+% doa_theta = sqrt(gain_theta)*exp(1j*e_thetaphase);
+% doa_phi = sqrt(gain_phi)*exp(1j*e_phiphase);
+% 
+% e_phi_complex = e_phimag .* exp(1j*e_phiphase);
+% e_theta_complex = e_thetamag .* exp(1j*e_thetaphase);
+% 
+% V = e_phi_complex.*doa_phi + e_theta_complex.*doa_theta
+
+
+% [Xcart_phi,Ycart_phi] = pol2cart(deg2rad(e_phiphase),e_phimag);
+% [Xcart_theta,Ycart_theta] = pol2cart(deg2rad(e_thetaphase),e_thetamag);
+% 
+% Vcomplex =  (Xcart_phi + Xcart_theta + 1j*(Ycart_phi+Ycart_theta));
+% phase_cir = rad2deg(atan2(imag(Vcomplex),real(Vcomplex)));
+% V_total = sum(Vcomplex);

@@ -1,11 +1,14 @@
-function[angle_y] = correctangles_wi(angle_x)
-for i=1:length(angle_x)
-    if angle_x(i) > 90
-        angle_y(i) = angle_x(i) - 90;
-    else
-        angle_y(i) = 90 - angle_x(i);       
-    end
+function[angle_new] = correctangles_wi(angle_wi,delta_axis)
+angle_new = - delta_axis + angle_wi;
+for i = 1:length(angle_new)
+if angle_new(i) > 180
+    angle_new(i)  = -2*180 - angle_new(i) ;
+elseif angle_new(i) < -180
+    angle_new(i)  = 2*180 + angle_new(i) ;
 end
 end
+angle_new = angle_new(:);
+end
+
 
 
