@@ -22,6 +22,6 @@ for i=1:Nreceivers
         end
     end
 end
-Hfit_nrnt =  Hfit_ntnr';
+Hfit_nrnt =  Hfit_ntnr.';
 end
 

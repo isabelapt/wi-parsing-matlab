@@ -16,8 +16,6 @@ function H=narrowbandULAsMIMOChannel(numTx,numRx,normalizedSpacingTx,...
 %See 6.6 from Antenna Theory Analysis and Design - Balanis 
 %Wireless InSite: Azimuth[-pi,pi] Elevation[0,pi]
 
-format long
-
 L=length(complexGains); % number of rays
 
 % Array factor for ULA at XY plane
@@ -30,7 +28,7 @@ for thisPath=1:L
     rxsignature=unitSpatialSignature(SteeringVectorRx(thisPath),normalizedSpacingRx,numRx);    
     %Eq. (7.56) in Tse's book but not incorporating the phase
     %Note the Hermitian operator ' changes the signs of angles in Tx
-    newH(:,:,thisPath)=sqrt(numRx*numTx)*complexGains(thisPath)*(rxsignature*txsignature.');
+    newH(:,:,thisPath)=sqrt(numRx*numTx)*complexGains(thisPath)*(rxsignature*txsignature');
     H= H + newH(:,:,thisPath);    
     %There is only one non-zero SVD for a single ray, and two for
     %properly spaced two rays

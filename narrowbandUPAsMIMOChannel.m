@@ -46,10 +46,11 @@ for thisPath=1:L
     
     %Eq. (7.56) in Tse's book but not incorporating the phase
     %Note the Hermitian operator ' changes the signs of angles in Tx
-    newH=sqrt(numRx*numTx)*complexGains(thisPath)*rxsignature*txsignature.';
+    newH=sqrt(numRx*numTx)*complexGains(thisPath)*rxsignature*txsignature';
     H= H + newH;
     %There is only one non-zero SVD for a single ray, and two for
     %properly spaced two rays
     %[~,singularValues,~]=svd(H);
     %diag(singularValues)
+end
 end

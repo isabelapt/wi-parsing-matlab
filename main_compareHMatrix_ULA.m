@@ -5,11 +5,10 @@ addpath(genpath('../mimo-toolbox/'))
 
 % % Add wi-parsing path
 % % https://github.com/isabelapt/wi-parsing-matlab
-% addpath(genpath('../wi-parsing-matlab/'))
-
+addpath(genpath('../wi-parsing-matlab/'))
 %%%%%%%%%%%%%%%%%%%%%%%% Project Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 c= 3*10^8;                                  % Ligth Speed (m/s)
-fo=2*10^9;                                  % Carrier Frequency (Hz)
+fo=28*10^9;                                  % Carrier Frequency (Hz)
 lambda = c/fo;
 BW = 20e06;                                 % Bandwidth (Hz)]
 inputpower_dbm = 0;                         % Input Transmit Power (dB)
@@ -22,7 +21,7 @@ paths_max=250;                              % Number of the maximum paths per re
 total_array_input = 1;                      % Input Power is distributed among Tx elements (1) or not (0)
 
 % Project Folder Name %
-test_n = 'Test#7';
+test_n = 'Test#11';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 %% Read MIMO Output %%
@@ -30,7 +29,7 @@ test_n = 'Test#7';
 
 % Number of Elements in ULA axis %
 numTx =4; 
-numRx =4;
+numRx =1;
 
 path = fullfile(pwd,test_n,'sweden_mimo','studyarea');
 rx=1;
@@ -63,18 +62,24 @@ powerpaths_W = dbm2W(powerpaths_dbm);
 %  Generate H Narrowband Channel based on Geometric Model
 normalizedSpacingTx =0.5;
 normalizedSpacingRx=0.5;
-paths_gain = sqrt(powerpaths_W./inputpower_W);
+if total_array_input == 1
+    paths_gain = sqrt(powerpaths_W./inputpower_W);
+else
+    paths_gain = sqrt(powerpaths_W); % TODO
+end
 phase_cir = deg2rad(phasepaths_deg);
-complexGains = paths_gain .* exp(-1j*phase_cir);
+complexGains = paths_gain .* exp(1j*-phase_cir);
 AoA_el = squeeze(path_info(:,4,:));
 AoA_az = squeeze(path_info(:,5,:));
 AoD_el = squeeze(path_info(:,6,:));
 AoD_az = squeeze(path_info(:,7,:));
 
 % Correct angles to start from the specific ULA axis
-delta_axis = 0; % The angle difference among x axis and ula axis
+delta_axis = 90; % The angle difference among x axis and ula axis
 AoA_az_new = correctangles_wi(AoA_az,delta_axis);
 AoD_az_new = correctangles_wi(AoD_az,delta_axis);
+
+AoD_az_new = 180 - abs(AoD_az_new);
 
 for i=1:rx
     H_ula(:,:,i)=narrowbandULAsMIMOChannel(numTx,numRx,normalizedSpacingTx,...
@@ -83,8 +88,6 @@ for i=1:rx
 end
 
 % Show NMSE error comparing both H-Matrix
-
 error_abs = nmse(abs(H_ula),abs(Hinsite_NrNt))
 error_phase  = nmse(angle(H_ula),angle(Hinsite_NrNt))
-
 error_H = nmse(H_ula,Hinsite_NrNt)

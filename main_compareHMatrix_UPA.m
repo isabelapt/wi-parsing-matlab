@@ -5,7 +5,7 @@ addpath(genpath('../mimo-toolbox/'))
 
 % % Add wi-parsing path
 % % https://github.com/isabelapt/wi-parsing-matlab
-% addpath(genpath('../wi-parsing-matlab/'))
+addpath(genpath('../wi-parsing-matlab/'))
 
 %%%%%%%%%%%%%%%%%%%%%%%% Project Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 c= 3*10^8;                                  % Ligth Speed (m/s)
@@ -22,21 +22,21 @@ paths_max=250;                              % Number of the maximum paths per re
 total_array_input = 1;                      % Input Power is distributed among Tx elements (1) or not (0)
 
 % Project Folder Name %
-test_n = 'Test#13';
+test_n = 'Test#10';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 %% Read MIMO Output %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Number of Elements in Tx UPA axis 1%
-numTx1 = 8; 
+numTx1 = 2; 
 % Number of Elements in Tx UPA axis 2%
-numTx2 = 8; 
+numTx2 = 2; 
 
 % Number of Elements in Rx UPA axis 1%
-numRx1 = 1; 
+numRx1 = 2; 
 % Number of Elements in Rx UPA axis 2%
-numRx2 = 1; 
+numRx2 = 2; 
 
 path = fullfile(pwd,test_n,'sweden_mimo','studyarea');
 rx=1;
@@ -48,7 +48,7 @@ numTx = numTx1*numTx2;
 
 % Read H-Matrix.csv %
 hmatrix_path = fullfile(path,'hmatrix');
-[Hinsite_NrNt] = Hmatrix_insite(rx,numRx,numTx,hmatrix_path,txSet,rxSet);
+[Hinsite_NtNr,Hinsite_NrNt] = Hmatrix_insite(rx,numRx,numTx,hmatrix_path,txSet,rxSet);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -74,7 +74,7 @@ normalizedSpacingTx =0.5;
 normalizedSpacingRx=0.5;
 paths_gain = sqrt(powerpaths_W./inputpower_W);
 phase_cir = deg2rad(phasepaths_deg);
-complexGains = paths_gain .* exp(-1j*phase_cir);
+complexGains = paths_gain .* exp(1j*phase_cir);
 AoA_el = squeeze(path_info(:,4,:));
 AoA_az = squeeze(path_info(:,5,:));
 AoD_el = squeeze(path_info(:,6,:));
@@ -85,9 +85,7 @@ delta_axis = 90; % The angle difference among x axis and UPA azimuth axis
 AoA_az_new = correctangles_wi(AoA_az,delta_axis);
 AoD_az_new = correctangles_wi(AoD_az,delta_axis);
 
-% AoA_az_new =AoA_az;
-% AoD_az_new = AoD_az;
-
+AoD_az_new = 180 - abs(AoD_az_new);
 
 for i=1:rx
     H_upa(:,:,i)=narrowbandUPAsMIMOChannel(numTx1,numTx2,numRx1,numRx2, normalizedSpacingTx,...
