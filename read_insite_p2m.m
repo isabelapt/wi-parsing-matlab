@@ -1,18 +1,10 @@
-% filename_power = '/home/lasse/Documentos/5GMDATA/Rosslyn/myarea1/Rosslyn.power.t001_02.r016.p2m';
-% filename_pl = '/home/lasse/Documentos/5GMDATA/Rosslyn/myarea1/Rosslyn.pl.t001_02.r016.p2m';
-% filenamme_spread = '/home/lasse/Documentos/5GMDATA/Rosslyn/myarea1/Rosslyn.spread.t001_02.r016.p2m';
-% filename_cir = '/home/lasse/Documentos/5GMDATA/Rosslyn/myarea1/Rosslyn.cir.t001_02.r016.p2m';
-% filename_paths = '/home/lasse/Documentos/5GMDATA/Rosslyn/myarea1/Rosslyn.paths.t001_02.r016.p2m';
-
-
-
 %% Script to read files p2m
 %% Results per receiver
 % Read the total received power (dBm) %% 
 [power_phase,rx,rx_position] = power_insite(filename_power);
 
 % Read Path Loss (dB) % 
-[pl_db] = pldb_insite(filename_pl);
+% [pl_db] = pldb_insite(filename_pl);
 
 % Delay Spread (sec) % 
 % [delayspread] = ds_insite(filename_spread);
@@ -55,8 +47,8 @@ powerpaths_W = powerpaths_W(~isnan(powerpaths_W));
 [rx_matrix,path_int,path_info,path_des,path_int_position] = paths_insite(rx,filename_paths,rx_paths,path_max_rx);
 
 % Read the Complex Eletric Fields 
-[e_phimag, e_phiphase,e_thetamag, e_thetaphase, ...
-     e_xmag,e_xphase,e_ymag,e_yphase,e_zmag,e_zphase,rx_paths,path_max_rx] =cef_insite(rx,filename_cef);
+% [e_phimag, e_phiphase,e_thetamag, e_thetaphase, ...
+%      e_xmag,e_xphase,e_ymag,e_yphase,e_zmag,e_zphase,rx_paths,path_max_rx] =cef_insite(rx,filename_cef);
 
 % Calculate Complex Voltage 
 % gain_theta = 2*pi/(inputpower_W*impedance);
