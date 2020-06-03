@@ -21,7 +21,7 @@ for i=1:Nreceivers
         %Hfit(k,:,i) = Hmatrix(:,(2*k-1))+1j*Hmatrix(:,2*k);
         end
     end
+    Hfit_nrnt(:,:,i) =  Hfit_ntnr(:,:,i).';
 end
-Hfit_nrnt =  Hfit_ntnr.';
 end
 

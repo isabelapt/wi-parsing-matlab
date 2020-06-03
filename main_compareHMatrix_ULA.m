@@ -1,93 +1,84 @@
 clear,clc;
+tic
 % Add  mimo-toolbox path
 % https://gitlab.lasse.ufpa.br/software/mimo-toolbox
 addpath(genpath('../mimo-toolbox/'))
 
-% % Add wi-parsing path
-% % https://github.com/isabelapt/wi-parsing-matlab
-addpath(genpath('../wi-parsing-matlab/'))
 %%%%%%%%%%%%%%%%%%%%%%%% Project Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 c= 3*10^8;                                  % Ligth Speed (m/s)
-fo=28*10^9;                                  % Carrier Frequency (Hz)
-lambda = c/fo;
+fo = 2*10^9;                                  % Carrier Frequency (Hz)
 BW = 20e06;                                 % Bandwidth (Hz)]
 inputpower_dbm = 0;                         % Input Transmit Power (dB)
+
+%
+
 inputpower_W = dbm2W(inputpower_dbm);       % Input Transmit Power (W)
 noiseFigure = 3;                            % Noise figure (in dB)
 ls_db =0;                                   % Transmission Loss
 noise_pd = -174;                            % dBm/Hz
 uni_interf = -250;                          % dBm
-paths_max=250;                              % Number of the maximum paths per receiver
-total_array_input = 1;                      % Input Power is distributed among Tx elements (1) or not (0)
+paths_max=250;                              % maximum number of the paths per receiver
 
-% Project Folder Name %
-test_n = 'Test#11';
+% Number os Tx and Rx Points
+numTxpoints = 1;
+numRxpoints = 5;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-%% Read MIMO Output %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Number of Elements in ULA axis %
-numTx =4; 
-numRx =1;
-
-path = fullfile(pwd,test_n,'sweden_mimo','studyarea');
-rx=1;
-txSet = '031';
-rxSet = '029';
-
-% Read H-Matrix.csv %
-hmatrix_path = fullfile(path,'hmatrix');
-[Hinsite_NtNr,Hinsite_NrNt] = Hmatrix_insite(rx,numRx,numTx,hmatrix_path,txSet,rxSet);
-
+%% Main paths of directory results
+main_path = 'D:\Users\isabela\Documents\SISO2MIMO\Scenario1\';
+path_siso = fullfile(main_path,'siso@2GHz','Tx@P1');
+path_mimo = fullfile(main_path,'mimo@2GHz','Tx@P1');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Read SISO Outputs %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-project_name = 'test_siso';
-txrxset ='t001_31.';
-rx_set= 'r029';
-end_name ='.p2m';
+read_siso
 
-path = fullfile(pwd,test_n,'sweden_siso','studyarea');
-filename_power=fullfile(path,strcat(project_name,'.power.',txrxset,rx_set,end_name));
-filename_cir =fullfile(path,strcat(project_name,'.cir.',txrxset,rx_set,end_name));
-filename_paths =fullfile(path,strcat(project_name,'.paths.',txrxset,rx_set,end_name));
+save_mat = fullfile(path_siso,'runtime_siso.mat');
 
-[time_arrival,powerpaths_dbm,phasepaths_deg,rx_paths,path_max_rx]= cir_insite(rx,paths_max,filename_cir);
-[rx_matrix,path_int,path_info,path_des,path_int_position] = paths_insite(rx,filename_paths,rx_paths,path_max_rx);
+save(save_mat,'runtime_siso');
 
-powerpaths_W = dbm2W(powerpaths_dbm);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%% Read MIMO Output %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% MIMO Parameters %%
+project_name = 'test_mimo';
+folder = 'ULA32';
+save_mat = fullfile(path_mimo,strcat(folder,'.mat'));
 
-%  Generate H Narrowband Channel based on Geometric Model
-normalizedSpacingTx =0.5;
-normalizedSpacingRx=0.5;
-if total_array_input == 1
-    paths_gain = sqrt(powerpaths_W./inputpower_W);
-else
-    paths_gain = sqrt(powerpaths_W); % TODO
-end
-phase_cir = deg2rad(phasepaths_deg);
-complexGains = paths_gain .* exp(1j*-phase_cir);
-AoA_el = squeeze(path_info(:,4,:));
-AoA_az = squeeze(path_info(:,5,:));
-AoD_el = squeeze(path_info(:,6,:));
-AoD_az = squeeze(path_info(:,7,:));
+% Number of Elements in ULA axis %
+numTx =32; 
+numRx =32;
 
-% Correct angles to start from the specific ULA axis
-delta_axis = 90; % The angle difference among x axis and ula axis
-AoA_az_new = correctangles_wi(AoA_az,delta_axis);
-AoD_az_new = correctangles_wi(AoD_az,delta_axis);
+read_mimo
 
-AoD_az_new = 180 - abs(AoD_az_new);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Generate H Narrowband Channel based on Geometric Model %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Parameters %%
+delta_axis_rx = 90;                         % The angle difference among x 
+                                            % axis and ula axis
+                                            
+delta_axis_tx = 90;                         % The angle difference among x 
+                                            % axis and ula axis
+total_array_input = 1;                      % Input Power is distributed among 
+                                            % Tx elements (1) or not (0)
+                                            
+geometric_model
 
-for i=1:rx
-    H_ula(:,:,i)=narrowbandULAsMIMOChannel(numTx,numRx,normalizedSpacingTx,...
-        normalizedSpacingRx,AoA_az_new(:,i),AoD_az_new(:,i),AoA_el(:,i),AoD_el(:,i),...
-        complexGains(:,i));    
-end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% RESULTS %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Store Execution Time
+exec_time = toc
 
 % Show NMSE error comparing both H-Matrix
-error_abs = nmse(abs(H_ula),abs(Hinsite_NrNt))
-error_phase  = nmse(angle(H_ula),angle(Hinsite_NrNt))
-error_H = nmse(H_ula,Hinsite_NrNt)
+for i =1 :numRxpoints
+error_abs(i) = nmse(abs(H_ULA(:,:,i)),abs(Hinsite_NrNt(:,:,i)));
+error_phase(i)  = nmse(angle(H_ULA(:,:,i)),angle(Hinsite_NrNt(:,:,i)));
+error_H(i) = nmse(H_ULA(:,:,i),Hinsite_NrNt(:,:,i));
+end
+
+%% SAVE %%
+save(save_mat,'exec_time','runtime_mimo','H_ULA', 'Hinsite_NrNt', 'error_H');
+
+%% SEE error_nmse_ula.m
