@@ -7,7 +7,10 @@ else
 end
 %% FROM SISO SIMULATION %%
 phase_cir = deg2rad(phasepaths_deg);
-complexGains = paths_gain .* exp(1j*-phase_cir);
+complexGains = paths_gain .* exp(-1j*phase_cir);
+phase_cp = rad2deg(angle(complexGains));
+delay = exp(-1j*2*pi*fo*time_arrival);
+phase_delay = rad2deg(angle(delay));
 
 % Correct angles to start from the specific ULA axis
 AoA_az_new = correctangles_wi(AoA_az,delta_axis_rx);

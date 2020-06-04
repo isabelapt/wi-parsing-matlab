@@ -42,13 +42,12 @@ save(save_mat,'runtime_siso');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% MIMO Parameters %%
 project_name = 'test_mimo';
-folder = 'ULA8';
+folder = 'ULA16';
 save_mat = fullfile(path_mimo,strcat(folder,'.mat'));
 
 % Number of Elements in ULA axis %
-numTx =8; 
-numRx =8;
-
+numTx =16; 
+numRx =16;
 
 read_mimo
 
