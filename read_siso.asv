@@ -22,12 +22,13 @@ for i = 1:numRxpoints
     for j = 1:paths_max
         end_int(:,j,i) = [4,5,6] + path_int(j,i)*3;
         last_int(:,j,i) = end_int(:,j,i)-3;
-        a = path_int_position(j,end_int(:,j,i),i);
-        b = path_int_position(j,last_int(:,j,i),i);
+        a = path_int_position(j,end_int(:,j,i),i)
+        b = path_int_position(j,last_int(:,j,i),i)
         D(j,i) = vecnorm(a - b, 2, 2);
     end
 end
 
+figure 
 title('Distance from last iteraction vs Power path')
 plot(D(:,1),powerpaths_dbm(:,1),'*');
 hold on
@@ -35,10 +36,10 @@ plot(D(:,2),powerpaths_dbm(:,2),'*');
 plot(D(:,3),powerpaths_dbm(:,3),'*');
 plot(D(:,4),powerpaths_dbm(:,4),'*');
 plot(D(:,5),powerpaths_dbm(:,5),'*');
+
+
 xlabel('Distance')
 ylabel('Power path(dbm)')
-hold off
-legend('Rx1','Rx2','Rx3','Rx4','Rx5')
 
 % Angle of arrival and departure (azimuth and elevation) per path
 AoA_el = squeeze(path_info(:,4,:));

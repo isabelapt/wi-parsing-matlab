@@ -6,7 +6,7 @@ addpath(genpath('../mimo-toolbox/'))
 
 %%%%%%%%%%%%%%%%%%%%%%%% Project Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 c= 3*10^8;                                  % Ligth Speed (m/s)
-fo = 2*10^9;                                  % Carrier Frequency (Hz)
+fo = 2*10^9;                                % Carrier Frequency (Hz)
 BW = 20e06;                                 % Bandwidth (Hz)]
 inputpower_dbm = 0;                         % Input Transmit Power (dB)
 
@@ -42,12 +42,12 @@ save(save_mat,'runtime_siso');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% MIMO Parameters %%
 project_name = 'test_mimo';
-folder = 'ULA16';
+folder = 'ULA64';
 save_mat = fullfile(path_mimo,strcat(folder,'.mat'));
 
 % Number of Elements in ULA axis %
-numTx =16; 
-numRx =16;
+numTx =64; 
+numRx =64;
 
 read_mimo
 
@@ -73,8 +73,8 @@ exec_time = toc
 
 % Show NMSE error comparing both H-Matrix
 for i =1 :numRxpoints
-% error_abs(i) = nmse(abs(H_ULA(:,:,i)),abs(Hinsite_NrNt(:,:,i)));
-% error_phase(i)  = nmse(angle(H_ULA(:,:,i)),angle(Hinsite_NrNt(:,:,i)));
+error_abs(i) = nmse(abs(H_ULA(:,:,i)),abs(Hinsite_NrNt(:,:,i)));
+error_phase(i)  = nmse(angle(H_ULA(:,:,i)),angle(Hinsite_NrNt(:,:,i)));
 error_H(i) = nmse(H_ULA(:,:,i),Hinsite_NrNt(:,:,i));
 end
 
@@ -82,3 +82,16 @@ end
 save(save_mat,'exec_time','runtime_mimo','H_ULA', 'Hinsite_NrNt', 'error_H');
 
 %% SEE error_nmse_ula.m
+
+%% Analyze per Receiver
+H_ULA_1 = H_ULA(:,:,1);
+H_ULA_2 = H_ULA(:,:,2);
+H_ULA_3 = H_ULA(:,:,3);
+H_ULA_4 = H_ULA(:,:,4);
+H_ULA_5 = H_ULA(:,:,5);
+
+Hinsite_NrNt_1 = Hinsite_NrNt(:,:,1);
+Hinsite_NrNt_2 = Hinsite_NrNt(:,:,2);
+Hinsite_NrNt_3 = Hinsite_NrNt(:,:,3);
+Hinsite_NrNt_4 = Hinsite_NrNt(:,:,4);
+Hinsite_NrNt_5 = Hinsite_NrNt(:,:,5);
