@@ -1,54 +1,59 @@
 %% Read SISO outputs %%
+time_arrival_all = [];
+powerpaths_dbm_all = [];
+phasepaths_deg_all = [];
+path_int_all = [];
+path_info_all = [];
+path_des_all = [];
+path_int_position_all = [];
 
-project_name = 'test_siso';
-txrxset ='t001_01.';
-rx_set= 'r002';
+for i = 1:2
+% filename_power(i)=fullfile(path,strcat(project_name,'.power.',txrxset,rx_set(i),'.p2m'));
+filename_cir(i) =fullfile(path,strcat(project_name,'.cir.',txrxset,rx_set(i),'.p2m'));
+filename_paths(i) =fullfile(path,strcat(project_name,'.paths.',txrxset,rx_set(i),'.p2m'));
 
-path = fullfile(path_siso,'studyarea');
-filename_power=fullfile(path,strcat(project_name,'.power.',txrxset,rx_set,'.p2m'));
-filename_cir =fullfile(path,strcat(project_name,'.cir.',txrxset,rx_set,'.p2m'));
-filename_paths =fullfile(path,strcat(project_name,'.paths.',txrxset,rx_set,'.p2m'));
+[time_arrival,powerpaths_dbm,phasepaths_deg,rx_paths,path_max_rx]= cir_insite(numRxpoints(i),...
+    paths_max,filename_cir(i));
+[rx_matrix,path_int,path_info,path_des,path_int_position] = paths_insite(numRxpoints(i),...
+    filename_paths(i),rx_paths,path_max_rx);
 
-[time_arrival,powerpaths_dbm,phasepaths_deg,rx_paths,path_max_rx]= cir_insite(numRxpoints,...
-    paths_max,filename_cir);
-[rx_matrix,path_int,path_info,path_des,path_int_position] = paths_insite(numRxpoints,...
-    filename_paths,rx_paths,path_max_rx);
+time_arrival_all = [time_arrival_all, time_arrival(:,1:numRxpoints(i))];
+powerpaths_dbm_all = [powerpaths_dbm_all, powerpaths_dbm(:,1:numRxpoints(i))];
+phasepaths_deg_all = [phasepaths_deg_all, phasepaths_deg(:,1:numRxpoints(i))];
+path_int_all = [path_int_all, path_int(:,1:numRxpoints(i))];
+path_des_all = [path_des_all, path_des(:,1:numRxpoints(i))];
+path_int_position_all = cat(3,path_int_position_all, path_int_position(:,:,1:numRxpoints(i)));
+path_info_all = cat(3,path_info_all, path_info(:,:,1:numRxpoints(i)));
+end
 
 % Paths Power
-powerpaths_W = dbm2W(powerpaths_dbm);
+powerpaths_W_all = dbm2W(powerpaths_dbm_all);
 
 % Calculate the distance between the last interaction point and receiver
-for i = 1:numRxpoints
+for i = 1:15
     for j = 1:paths_max
-        end_int(:,j,i) = [4,5,6] + path_int(j,i)*3;
+        end_int(:,j,i) = [4,5,6] + path_int_all(j,i)*3;
         last_int(:,j,i) = end_int(:,j,i)-3;
-        a = path_int_position(j,end_int(:,j,i),i);
-        b = path_int_position(j,last_int(:,j,i),i);
+        a = path_int_position_all(j,end_int(:,j,i),i);
+        b = path_int_position_all(j,last_int(:,j,i),i);
         D(j,i) = vecnorm(a - b, 2, 2);
     end
 end
 
-title('Distance from last iteraction vs Power path')
-plot(D(:,1),powerpaths_dbm(:,1),'*');
-hold on
-plot(D(:,2),powerpaths_dbm(:,2),'*');
-plot(D(:,3),powerpaths_dbm(:,3),'*');
-plot(D(:,4),powerpaths_dbm(:,4),'*');
-plot(D(:,5),powerpaths_dbm(:,5),'*');
-xlabel('Distance')
-ylabel('Power path(dbm)')
-hold off
-legend('Rx1','Rx2','Rx3','Rx4','Rx5')
+% % Plot Histograms
+% plot_hist_dist 
+% plot_hist_aoa_aod
+
 
 % Angle of arrival and departure (azimuth and elevation) per path
-AoA_el = squeeze(path_info(:,4,:));
-AoA_az = squeeze(path_info(:,5,:));
-AoD_el = squeeze(path_info(:,6,:));
-AoD_az = squeeze(path_info(:,7,:));
+AoA_el = squeeze(path_info_all(:,4,:));
+AoA_az = squeeze(path_info_all(:,5,:));
+AoD_el = squeeze(path_info_all(:,6,:));
+AoD_az = squeeze(path_info_all(:,7,:));
 
 % Read Simulation Time
-file =  fullfile(path_siso,strcat(project_name,'.studyarea.diag'));
-[runtime_siso] = readruntime(file); % Hour Minute Second
+file_time  =  fullfile(path_siso,strcat(project_name,'.study.diag'));
+[runtime_siso] = readruntime(file_time); % Hour Minute Second
 
 % read_insite_p2m
 % 

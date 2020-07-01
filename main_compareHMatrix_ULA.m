@@ -1,3 +1,4 @@
+close all;
 clear,clc;
 tic
 % Add  mimo-toolbox path
@@ -5,32 +6,39 @@ tic
 addpath(genpath('../mimo-toolbox/'))
 
 %%%%%%%%%%%%%%%%%%%%%%%% Project Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-c= 3*10^8;                                  % Ligth Speed (m/s)
-fo = 2*10^9;                                % Carrier Frequency (Hz)
+c= physconst('LightSpeed');                 % Ligth Speed (m/s)
+fo = 2e09;                                  % Carrier Frequency (Hz)
 BW = 20e06;                                 % Bandwidth (Hz)]
 inputpower_dbm = 0;                         % Input Transmit Power (dB)
+lambda = c/fo;
 
 %
 
 inputpower_W = dbm2W(inputpower_dbm);       % Input Transmit Power (W)
-noiseFigure = 3;                            % Noise figure (in dB)
-ls_db =0;                                   % Transmission Loss
-noise_pd = -174;                            % dBm/Hz
-uni_interf = -250;                          % dBm
+% noiseFigure = 3;                            % Noise figure (in dB)
+% ls_db =0;                                   % Transmission Loss
+% noise_pd = -174;                            % dBm/Hz
+% uni_interf = -250;                          % dBm
 paths_max=250;                              % maximum number of the paths per receiver
 
 % Number os Tx and Rx Points
 numTxpoints = 1;
-numRxpoints = 5;
+numRxpoints = [11,4]; %
 
 %% Main paths of directory results
-main_path = 'C:\Users\isabe\OneDrive\Documentos\LASSE\SISO2MIMO\Scenario1\';
-path_siso = fullfile(main_path,'siso@2GHz','Tx@P1');
-path_mimo = fullfile(main_path,'mimo@2GHz','Tx@P1');
+main_path = 'C:\Users\isabe\OneDrive\Documentos\LASSE\SISO2MIMO\Scenario2\';
+path_siso = fullfile(main_path,'ULA_Y','siso@2GHz');
+path_mimo = fullfile(main_path,'ULA_Y','mimo@2GHz');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Read SISO Outputs %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+project_name = 'box';
+txrxset ='t001_09.';
+rx_set= ["r008","r010"];
+
+path = fullfile(path_siso,'study');
+
 read_siso
 
 save_mat = fullfile(path_siso,'runtime_siso.mat');
@@ -41,13 +49,18 @@ save(save_mat,'runtime_siso');
 %% Read MIMO Output %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% MIMO Parameters %%
-project_name = 'test_mimo';
-folder = 'ULA64';
-save_mat = fullfile(path_mimo,strcat(folder,'.mat'));
+project_name = 'box';
+% folder = 'ULA64';
+% save_mat = fullfile(path_mimo,strcat(folder,'.mat'));
 
 % Number of Elements in ULA axis %
 numTx =64; 
 numRx =64;
+
+path = fullfile(path_mimo,'study');
+
+txSet = '009';
+rxSet = ["008","010"];
 
 read_mimo
 
@@ -55,11 +68,12 @@ read_mimo
 %% Generate H Narrowband Channel based on Geometric Model %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Parameters %%
-delta_axis_rx = 90;                         % The angle difference among x 
+delta_axis_rx = 90;                         % The angle difference in degrees among x 
                                             % axis and ula axis
                                             
-delta_axis_tx = 90;                         % The angle difference among x 
+delta_axis_tx = 90;                         % The angle difference in degrees among x 
                                             % axis and ula axis
+                                            
 total_array_input = 1;                      % Input Power is distributed among 
                                             % Tx elements (1) or not (0)
                                             
@@ -72,26 +86,34 @@ geometric_model_ula
 exec_time = toc
 
 % Show NMSE error comparing both H-Matrix
-for i =1 :numRxpoints
-error_abs(i) = nmse(abs(H_ULA(:,:,i)),abs(Hinsite_NrNt(:,:,i)));
-error_phase(i)  = nmse(angle(H_ULA(:,:,i)),angle(Hinsite_NrNt(:,:,i)));
-error_H(i) = nmse(H_ULA(:,:,i),Hinsite_NrNt(:,:,i));
+
+for i =1:15
+error_abs(i) = nmse(abs(H_ULA(:,:,i)),abs(Hinsite_NrNt_all(:,:,i)));
+error_phase(i)  = nmse(angle(H_ULA(:,:,i)),angle(Hinsite_NrNt_all(:,:,i)));
+error_H(i) = nmse(H_ULA(:,:,i),Hinsite_NrNt_all(:,:,i));
 end
+
 
 %% SAVE %%
 save(save_mat,'exec_time','runtime_mimo','H_ULA', 'Hinsite_NrNt', 'error_H');
 
-%% SEE error_nmse_ula.m
 
-%% Analyze per Receiver
-H_ULA_1 = H_ULA(:,:,1);
-H_ULA_2 = H_ULA(:,:,2);
-H_ULA_3 = H_ULA(:,:,3);
-H_ULA_4 = H_ULA(:,:,4);
-H_ULA_5 = H_ULA(:,:,5);
-
-Hinsite_NrNt_1 = Hinsite_NrNt(:,:,1);
-Hinsite_NrNt_2 = Hinsite_NrNt(:,:,2);
-Hinsite_NrNt_3 = Hinsite_NrNt(:,:,3);
-Hinsite_NrNt_4 = Hinsite_NrNt(:,:,4);
-Hinsite_NrNt_5 = Hinsite_NrNt(:,:,5);
+% %% Capacity 
+% [C_ULA] = CvsSNR_EqualPowerAllocation(-20:20,H_ULA(:,:,2),1);
+% [C_INSITE] = CvsSNR_EqualPowerAllocation(-20:20,Hinsite_NrNt(:,:,2),1);
+% 
+% figure
+% plot(-20:20,C_ULA,'-.*','LineWidth',1)
+% hold on
+% plot(-20:20,C_INSITE,'-.*','LineWidth',1)
+% title('Rx2')
+% legend('SISO','WI')
+% 
+% [C_ULA] = CvsSNR_EqualPowerAllocation(-20:20,H_ULA(:,:,8),1);
+% [C_INSITE] = CvsSNR_EqualPowerAllocation(-20:20,Hinsite_NrNt(:,:,8),1);
+% figure
+% plot(-20:20,C_ULA,'-.*','LineWidth',1)
+% hold on
+% plot(-20:20,C_INSITE,'-.*','LineWidth',1)
+% title('Rx8')
+% legend('SISO','WI')

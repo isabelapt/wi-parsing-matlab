@@ -1,23 +1,35 @@
 %% Read MIMO Outputs %%
-
-%%
-txSet = '001';
-rxSet = '002';
-
-path = fullfile(path_mimo,folder,'studyarea');
+file_time  =  fullfile(path_mimo,strcat(project_name,'.study.diag'));
 
 % Read H-Matrix.csv %
 hmatrix_path = fullfile(path,'hmatrix');
-[Hinsite_NtNr,Hinsite_NrNt] = Hmatrix_insite(numRxpoints,numRx,numTx,...
-    hmatrix_path,txSet,rxSet);
+
+Hinsite_NtNr_all = [];
+Hinsite_NrNt_all = [];
+
+Power_MIMOpaths_all = [];
+Phase_MIMOpaths_all = [];
+TimeofArrival_MIMOpaths_all = [];
+
+for i = 1:2
+[Hinsite_NtNr,Hinsite_NrNt] = Hmatrix_insite(numRxpoints(i),numRx,numTx,...
+    hmatrix_path,txSet,rxSet(i));
+
+Hinsite_NtNr_all = cat(3,Hinsite_NtNr_all, Hinsite_NtNr);
+Hinsite_NrNt_all = cat(3,Hinsite_NrNt_all, Hinsite_NrNt);
 
 % Read CIR.csv %
 % Npaths x (numTx*numRx*numRxpoints)
 cir_path = fullfile(path,'cir');
-[Power_MIMOpaths, Phase_MIMOpaths, TimeofArrival_MIMOpaths]  = MIMOCir_insite(numRxpoints,numRx,numTx,...
-    cir_path, txSet,rxSet);
+[Power_MIMOpaths, Phase_MIMOpaths, TimeofArrival_MIMOpaths]  = MIMOCir_insite(numRxpoints(i),numRx,numTx,...
+    cir_path, txSet,rxSet(i));
 
-Phase_MIMOpaths_deg = rad2deg(Phase_MIMOpaths);
+Power_MIMOpaths_all = cat(2,Power_MIMOpaths_all,Power_MIMOpaths);
+Phase_MIMOpaths_all = cat(2,Power_MIMOpaths_all,Phase_MIMOpaths);
+TimeofArrival_MIMOpaths_all = cat(2,Power_MIMOpaths_all,TimeofArrival_MIMOpaths);
+end
+
+Phase_MIMOpaths_deg_all = rad2deg(Phase_MIMOpaths_all);
 
 for p = 1:paths_max
     for i = 1: numRxpoints
@@ -25,7 +37,7 @@ for p = 1:paths_max
         for j = 1:numTx
             for k = 1:numRx
                 m = m+1;
-                Phase_MIMOpaths_deg_new(k,j,p,i)  = Phase_MIMOpaths_deg(p,m);
+                Phase_MIMOpaths_deg_new(k,j,p,i)  = Phase_MIMOpaths_deg_all(p,m);
             end
             phasediff_elements_rx(:,j,p,i) = rad2deg(angdiff(deg2rad(Phase_MIMOpaths_deg_new(:,j,p,i))));
             phasediff_elements_rx2(:,j,p,i)= rad2deg(angdiff(deg2rad(phasediff_elements_rx(:,j,p,i))));
@@ -37,5 +49,5 @@ for p = 1:paths_max
 end
 
 % Read Simulation Time
-file =  fullfile(path_mimo,folder,strcat(project_name,'.studyarea.diag'));
-[runtime_mimo] = readruntime(file); % Hour Minute Second
+% file =  fullfile(path_mimo,folder,strcat(project_name,'.studyarea.diag'));
+[runtime_mimo] = readruntime(file_time); % Hour Minute Second
