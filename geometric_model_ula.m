@@ -14,8 +14,8 @@ phase_delay = rad2deg(angle(delay));
 
 % Correct angles to start from the specific ULA axis
 for i =1:15
-AoA_az_new(:,i) = correctangles_wi(AoA_az(:,i),delta_axis_rx);
-AoD_az_new(:,i) = correctangles_wi(AoD_az(:,i),delta_axis_tx);
+    AoA_az_new(:,i) = correctangles_wi(AoA_az(:,i),delta_axis_rx);
+    AoD_az_new(:,i) = correctangles_wi(AoD_az(:,i),delta_axis_tx);
 end
 
 AoD_az_new = 180 - abs(AoD_az_new); %% ?????
@@ -27,7 +27,11 @@ txrx_distance = D(1,:);
 
 %% MODEL
 for i=1:15
-    H_ULA(:,:,i)=narrowbandULAsMIMOChannel_v2(numTx,numRx,normalizedSpacingTx,...
+    H_ULA(:,:,i)=narrowbandULAsMIMOChannel(numTx,numRx,normalizedSpacingTx,...
         normalizedSpacingRx,AoA_az_new(:,i),AoD_az_new(:,i),AoA_el(:,i),AoD_el(:,i),...
-        complexGains(:,i),array_ula_size,lambda,txrx_distance(i));    
+        complexGains(:,i));
+    
+    H_ULA_2(:,:,i)=narrowbandULAsMIMOChannel_v2(numTx,numRx,normalizedSpacingTx,...
+        normalizedSpacingRx,AoA_az_new(:,i),AoD_az_new(:,i),AoA_el(:,i),AoD_el(:,i),...
+        complexGains(:,i),array_ula_size,lambda,txrx_distance(i));
 end

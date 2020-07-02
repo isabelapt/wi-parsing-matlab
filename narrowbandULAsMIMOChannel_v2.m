@@ -19,15 +19,26 @@ function H=narrowbandULAsMIMOChannel_v2(numTx,numRx,normalizedSpacingTx,...
 L=length(complexGains); % number of rays
 
 % Array factor for ULA at XY plane
-SteeringVectorRx= sin(deg2rad(AoA_el)).*cos(deg2rad(AoA_az));
-SteeringVectorTx= sin(deg2rad(AoD_el)).*cos(deg2rad(AoD_az));
+% SteeringVectorRx= sin(deg2rad(AoA_el)).*cos(deg2rad(AoA_az));
+% SteeringVectorTx= sin(deg2rad(AoD_el)).*cos(deg2rad(AoD_az));
 
 H=zeros(numRx,numTx); %initialize
 for thisPath=1:L 
-    [AoA_calc_deg] = correct_diffphase_element(AoA_az(thisPath),array_ula_size,...
+    AoA_az_2 = correct_diffphase_element(AoA_az(thisPath),array_ula_size,...
         normalizedSpacingRx,lambda,txrx_distance);
-    [AoD_calc_deg] = correct_diffphase_element(AoD_az(thisPath),array_ula_size,...
+    AoD_az_2 = correct_diffphase_element(AoD_az(thisPath),array_ula_size,...
      normalizedSpacingTx,lambda,txrx_distance);
+
+    SteeringVectorRx= sin(deg2rad(AoA_el(thisPath))).*cos(deg2rad(AoA_az_2));
+    SteeringVectorTx= sin(deg2rad(AoD_el(thisPath))).*cos(deg2rad(AoD_az_2));
+
+    rxsignature=exp(-1j*2*pi*SteeringVectorRx);
+    rxsignature=(1/sqrt(numRx))*rxsignature ; %normalize to have unitary norm
+    rxsignature=rxsignature(:); %make it a column vector
+
+    txsignature=exp(-1j*2*pi*SteeringVectorTx);
+    txsignature=(1/sqrt(numTx))*txsignature ; %normalize to have unitary norm
+    txsignature=txsignature(:); %make it a column vector
     
     %Eq. (7.56) in Tse's book but not incorporating the phase
     %Note the Hermitian operator ' changes the signs of angles in Tx

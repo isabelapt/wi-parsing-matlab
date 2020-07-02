@@ -93,6 +93,11 @@ error_phase(i)  = nmse(angle(H_ULA(:,:,i)),angle(Hinsite_NrNt_all(:,:,i)));
 error_H(i) = nmse(H_ULA(:,:,i),Hinsite_NrNt_all(:,:,i));
 end
 
+for i =1:15
+error_abs_2(i) = nmse(abs(H_ULA_2(:,:,i)),abs(Hinsite_NrNt_all(:,:,i)));
+error_phase_2(i)  = nmse(angle(H_ULA_2(:,:,i)),angle(Hinsite_NrNt_all(:,:,i)));
+error_H_2(i) = nmse(H_ULA_2(:,:,i),Hinsite_NrNt_all(:,:,i));
+end
 
 %% SAVE %%
 save(save_mat,'exec_time','runtime_mimo','H_ULA', 'Hinsite_NrNt', 'error_H');
