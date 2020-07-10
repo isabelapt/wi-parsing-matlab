@@ -10,10 +10,10 @@ function H=narrowbandULAsMIMOChannel_v2(numTx,numRx,normalizedSpacingTx,...
 %Normalized spacing is the distance among antenna elements divided by the
 %wavelength.
 %delta_axis is the angle difference among x axis and ula axis
-%General case which includes elevation angle 
-%"Directional Beamforming for Millimeter-WaveMIMO Systems"  
+%General case which includes elevation angle
+%"Directional Beamforming for Millimeter-WaveMIMO Systems"
 %cos(azimuth) ---> sin(elevation)cos(azimuth)
-%See 6.6 from Antenna Theory Analysis and Design - Balanis 
+%See 6.6 from Antenna Theory Analysis and Design - Balanis
 %Wireless InSite: Azimuth[-pi,pi] Elevation[0,pi]
 
 L=length(complexGains); % number of rays
@@ -23,19 +23,22 @@ L=length(complexGains); % number of rays
 % SteeringVectorTx= sin(deg2rad(AoD_el)).*cos(deg2rad(AoD_az));
 
 H=zeros(numRx,numTx); %initialize
-for thisPath=1:L 
+for thisPath=1:L
     AoA_az_2 = correct_diffphase_element(AoA_az(thisPath),array_ula_size,...
         normalizedSpacingRx,lambda,txrx_distance);
     AoD_az_2 = correct_diffphase_element(AoD_az(thisPath),array_ula_size,...
-     normalizedSpacingTx,lambda,txrx_distance);
-
+        normalizedSpacingTx,lambda,txrx_distance);
+    
+    AoA_az_2_d = rad2deg(AoA_az_2);
+    AoD_az_2_d = rad2deg(AoA_az_2);
+    
     SteeringVectorRx= sin(deg2rad(AoA_el(thisPath))).*cos(deg2rad(AoA_az_2));
     SteeringVectorTx= sin(deg2rad(AoD_el(thisPath))).*cos(deg2rad(AoD_az_2));
-
+    
     rxsignature=exp(-1j*2*pi*SteeringVectorRx);
     rxsignature=(1/sqrt(numRx))*rxsignature ; %normalize to have unitary norm
     rxsignature=rxsignature(:); %make it a column vector
-
+    
     txsignature=exp(-1j*2*pi*SteeringVectorTx);
     txsignature=(1/sqrt(numTx))*txsignature ; %normalize to have unitary norm
     txsignature=txsignature(:); %make it a column vector
@@ -43,7 +46,7 @@ for thisPath=1:L
     %Eq. (7.56) in Tse's book but not incorporating the phase
     %Note the Hermitian operator ' changes the signs of angles in Tx
     newH(:,:,thisPath)=sqrt(numRx*numTx)*complexGains(thisPath)*(rxsignature*txsignature');
-    H= H + newH(:,:,thisPath);    
+    H= H + newH(:,:,thisPath);
     %There is only one non-zero SVD for a single ray, and two for
     %properly spaced two rays
     %[~,singularValues,~]=svd(H);

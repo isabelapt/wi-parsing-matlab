@@ -8,7 +8,7 @@ addpath(genpath('../mimo-toolbox/'))
 %%%%%%%%%%%%%%%%%%%%%%%% Project Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 c= physconst('LightSpeed');                 % Ligth Speed (m/s)
 fo = 2e09;                                  % Carrier Frequency (Hz)
-BW = 20e06;                                 % Bandwidth (Hz)]
+% BW = 20e06;                                 % Bandwidth (Hz)]
 inputpower_dbm = 0;                         % Input Transmit Power (dB)
 lambda = c/fo;
 
@@ -23,19 +23,19 @@ paths_max=250;                              % maximum number of the paths per re
 
 % Number os Tx and Rx Points
 numTxpoints = 1;
-numRxpoints = [11,4]; %
+numRxpoints = [11]; %
 
 %% Main paths of directory results
-main_path = 'C:\Users\isabe\OneDrive\Documentos\LASSE\SISO2MIMO\Scenario2\';
-path_siso = fullfile(main_path,'ULA_Y','siso@2GHz');
-path_mimo = fullfile(main_path,'ULA_Y','mimo@2GHz');
+main_path = 'C:\Users\isabe\OneDrive\Documentos\LASSE\SISO2MIMO\Scenario3\';
+path_siso = fullfile(main_path,'ULA_X','siso@2GHz');
+path_mimo = fullfile(main_path,'ULA_X','mimo@2GHz');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Read SISO Outputs %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-project_name = 'box';
-txrxset ='t001_09.';
-rx_set= ["r008","r010"];
+project_name = 'wall';
+txrxset ='t001_01.';
+rx_set= ["r002"];
 
 path = fullfile(path_siso,'study');
 
@@ -49,7 +49,7 @@ save(save_mat,'runtime_siso');
 %% Read MIMO Output %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% MIMO Parameters %%
-project_name = 'box';
+project_name = 'wall';
 % folder = 'ULA64';
 % save_mat = fullfile(path_mimo,strcat(folder,'.mat'));
 
@@ -59,8 +59,11 @@ numRx =64;
 
 path = fullfile(path_mimo,'study');
 
-txSet = '009';
-rxSet = ["008","010"];
+txSet = '001';
+rxSet = ["002"];
+
+normalizedSpacingTx = 0.5;
+normalizedSpacingRx = 0.5;
 
 read_mimo
 
@@ -68,10 +71,10 @@ read_mimo
 %% Generate H Narrowband Channel based on Geometric Model %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Parameters %%
-delta_axis_rx = 90;                         % The angle difference in degrees among x 
+delta_axis_rx = 0;                         % The angle difference in degrees among x 
                                             % axis and ula axis
                                             
-delta_axis_tx = 90;                         % The angle difference in degrees among x 
+delta_axis_tx = 0;                         % The angle difference in degrees among x 
                                             % axis and ula axis
                                             
 total_array_input = 1;                      % Input Power is distributed among 
@@ -87,13 +90,13 @@ exec_time = toc
 
 % Show NMSE error comparing both H-Matrix
 
-for i =1:15
+for i =1:numRxpoints
 error_abs(i) = nmse(abs(H_ULA(:,:,i)),abs(Hinsite_NrNt_all(:,:,i)));
 error_phase(i)  = nmse(angle(H_ULA(:,:,i)),angle(Hinsite_NrNt_all(:,:,i)));
 error_H(i) = nmse(H_ULA(:,:,i),Hinsite_NrNt_all(:,:,i));
 end
 
-for i =1:15
+for i =1:numRxpoints
 error_abs_2(i) = nmse(abs(H_ULA_2(:,:,i)),abs(Hinsite_NrNt_all(:,:,i)));
 error_phase_2(i)  = nmse(angle(H_ULA_2(:,:,i)),angle(Hinsite_NrNt_all(:,:,i)));
 error_H_2(i) = nmse(H_ULA_2(:,:,i),Hinsite_NrNt_all(:,:,i));

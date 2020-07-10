@@ -11,7 +11,8 @@ Power_MIMOpaths_all = [];
 Phase_MIMOpaths_all = [];
 TimeofArrival_MIMOpaths_all = [];
 
-for i = 1:2
+% for i = 1:2
+i =1;
 [Hinsite_NtNr,Hinsite_NrNt] = Hmatrix_insite(numRxpoints(i),numRx,numTx,...
     hmatrix_path,txSet,rxSet(i));
 
@@ -27,12 +28,13 @@ cir_path = fullfile(path,'cir');
 Power_MIMOpaths_all = cat(2,Power_MIMOpaths_all,Power_MIMOpaths);
 Phase_MIMOpaths_all = cat(2,Power_MIMOpaths_all,Phase_MIMOpaths);
 TimeofArrival_MIMOpaths_all = cat(2,Power_MIMOpaths_all,TimeofArrival_MIMOpaths);
-end
+% end
 
 Phase_MIMOpaths_deg_all = rad2deg(Phase_MIMOpaths_all);
 
-for p = 1:paths_max
-    for i = 1: numRxpoints
+
+for i = 1:numRxpoints
+    for p = 1:rx_paths(i)
         m=0;
         for j = 1:numTx
             for k = 1:numRx
@@ -42,9 +44,9 @@ for p = 1:paths_max
             phasediff_elements_rx(:,j,p,i) = rad2deg(angdiff(deg2rad(Phase_MIMOpaths_deg_new(:,j,p,i))));
             phasediff_elements_rx2(:,j,p,i)= rad2deg(angdiff(deg2rad(phasediff_elements_rx(:,j,p,i))));
         end
-%         a = exp(1j*deg2rad(Phase_MIMOpaths_deg_new(:,:,p,i)));
-%         b = exp(-1j*deg2rad(Phase_MIMOpaths_deg_new(1,1,p,i)));
-%         phasediff_elements(:,:,p,i) = rad2deg(angle(a*b));
+        %         a = exp(1j*deg2rad(Phase_MIMOpaths_deg_new(:,:,p,i)));
+        %         b = exp(-1j*deg2rad(Phase_MIMOpaths_deg_new(1,1,p,i)));
+        %         phasediff_elements(:,:,p,i) = rad2deg(angle(a*b));
     end
 end
 

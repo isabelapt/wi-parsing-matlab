@@ -7,7 +7,7 @@ path_info_all = [];
 path_des_all = [];
 path_int_position_all = [];
 
-for i = 1:2
+i = 1;
 % filename_power(i)=fullfile(path,strcat(project_name,'.power.',txrxset,rx_set(i),'.p2m'));
 filename_cir(i) =fullfile(path,strcat(project_name,'.cir.',txrxset,rx_set(i),'.p2m'));
 filename_paths(i) =fullfile(path,strcat(project_name,'.paths.',txrxset,rx_set(i),'.p2m'));
@@ -24,14 +24,14 @@ path_int_all = [path_int_all, path_int(:,1:numRxpoints(i))];
 path_des_all = [path_des_all, path_des(:,1:numRxpoints(i))];
 path_int_position_all = cat(3,path_int_position_all, path_int_position(:,:,1:numRxpoints(i)));
 path_info_all = cat(3,path_info_all, path_info(:,:,1:numRxpoints(i)));
-end
+% end
 
 % Paths Power
 powerpaths_W_all = dbm2W(powerpaths_dbm_all);
 
 % Calculate the distance between the last interaction point and receiver
-for i = 1:15
-    for j = 1:paths_max
+for i = 1:numRxpoints
+    for j = 1:rx_paths(i)
         end_int(:,j,i) = [4,5,6] + path_int_all(j,i)*3;
         last_int(:,j,i) = end_int(:,j,i)-3;
         a = path_int_position_all(j,end_int(:,j,i),i);
