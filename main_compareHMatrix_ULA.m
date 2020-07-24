@@ -8,27 +8,27 @@ addpath(genpath('../mimo-toolbox/'))
 %%%%%%%%%%%%%%%%%%%%%%%% Project Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 c= physconst('LightSpeed');                 % Ligth Speed (m/s)
 fo = 2e09;                                  % Carrier Frequency (Hz)
-% BW = 20e06;                                 % Bandwidth (Hz)]
 inputpower_dbm = 0;                         % Input Transmit Power (dB)
 lambda = c/fo;
+% BW = 20e06;                               % Bandwidth (Hz)]
 
 %
 
-inputpower_W = dbm2W(inputpower_dbm);       % Input Transmit Power (W)
+inputpower_W = dbm2W(inputpower_dbm);         % Input Transmit Power (W)
 % noiseFigure = 3;                            % Noise figure (in dB)
 % ls_db =0;                                   % Transmission Loss
 % noise_pd = -174;                            % dBm/Hz
 % uni_interf = -250;                          % dBm
-paths_max=250;                              % maximum number of the paths per receiver
+paths_max=250;                                % maximum number of the paths per receiver
 
 % Number os Tx and Rx Points
 numTxpoints = 1;
-numRxpoints = [11]; %
+numRxpoints = [10]; %
 
 %% Main paths of directory results
-main_path = 'C:\Users\isabe\OneDrive\Documentos\LASSE\SISO2MIMO\Scenario3\';
-path_siso = fullfile(main_path,'ULA_X','siso@2GHz');
-path_mimo = fullfile(main_path,'ULA_X','mimo@2GHz');
+main_path = 'C:\Users\isabe\OneDrive\Documentos\LASSE\SISO2MIMO\Scenario4\';
+path_siso = fullfile(main_path,'ULA_Y','siso@2GHz');
+path_mimo = fullfile(main_path,'ULA_Y','mimo@2GHz');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Read SISO Outputs %%
@@ -71,10 +71,10 @@ read_mimo
 %% Generate H Narrowband Channel based on Geometric Model %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Parameters %%
-delta_axis_rx = 0;                         % The angle difference in degrees among x 
+delta_axis_rx = 90;                         % The angle difference in degrees among x 
                                             % axis and ula axis
                                             
-delta_axis_tx = 0;                         % The angle difference in degrees among x 
+delta_axis_tx = 90;                         % The angle difference in degrees among x 
                                             % axis and ula axis
                                             
 total_array_input = 1;                      % Input Power is distributed among 
@@ -104,24 +104,3 @@ end
 
 %% SAVE %%
 save(save_mat,'exec_time','runtime_mimo','H_ULA', 'Hinsite_NrNt', 'error_H');
-
-
-% %% Capacity 
-% [C_ULA] = CvsSNR_EqualPowerAllocation(-20:20,H_ULA(:,:,2),1);
-% [C_INSITE] = CvsSNR_EqualPowerAllocation(-20:20,Hinsite_NrNt(:,:,2),1);
-% 
-% figure
-% plot(-20:20,C_ULA,'-.*','LineWidth',1)
-% hold on
-% plot(-20:20,C_INSITE,'-.*','LineWidth',1)
-% title('Rx2')
-% legend('SISO','WI')
-% 
-% [C_ULA] = CvsSNR_EqualPowerAllocation(-20:20,H_ULA(:,:,8),1);
-% [C_INSITE] = CvsSNR_EqualPowerAllocation(-20:20,Hinsite_NrNt(:,:,8),1);
-% figure
-% plot(-20:20,C_ULA,'-.*','LineWidth',1)
-% hold on
-% plot(-20:20,C_INSITE,'-.*','LineWidth',1)
-% title('Rx8')
-% legend('SISO','WI')
